@@ -1,5 +1,5 @@
 // // For more information about this file see https://dove.feathersjs.com/guides/cli/service.schemas.html
-import { resolve } from '@feathersjs/schema'
+import { resolve, virtual } from '@feathersjs/schema'
 import { Type, getValidator, querySyntax } from '@feathersjs/typebox'
 import type { Static } from '@feathersjs/typebox'
 import { passwordHash } from '@feathersjs/authentication-local'
@@ -12,7 +12,10 @@ export const userSchema = Type.Object(
   {
     id: Type.Number(),
     email: Type.String(),
-    password: Type.Optional(Type.String())
+    role: Type.Optional(Type.String()),
+    password: Type.Optional(Type.String()),
+    createdAt: Type.Number(),
+    updatedAt: Type.Number()
   },
   { $id: 'User', additionalProperties: false }
 )
@@ -26,13 +29,19 @@ export const userExternalResolver = resolve<User, HookContext>({
 })
 
 // Schema for creating new entries
-export const userDataSchema = Type.Pick(userSchema, ['email', 'password'], {
+export const userDataSchema = Type.Pick(userSchema, ['email', 'password', 'role'], {
   $id: 'UserData'
 })
 export type UserData = Static<typeof userDataSchema>
 export const userDataValidator = getValidator(userDataSchema, dataValidator)
 export const userDataResolver = resolve<User, HookContext>({
-  password: passwordHash({ strategy: 'local' })
+  password: passwordHash({ strategy: 'local' }),
+  createdAt: async () => {
+    return Date.now()
+  },
+  updatedAt: async () => {
+    return Date.now()
+  }
 })
 
 // Schema for updating existing entries
@@ -42,11 +51,20 @@ export const userPatchSchema = Type.Partial(userSchema, {
 export type UserPatch = Static<typeof userPatchSchema>
 export const userPatchValidator = getValidator(userPatchSchema, dataValidator)
 export const userPatchResolver = resolve<User, HookContext>({
-  password: passwordHash({ strategy: 'local' })
+  password: passwordHash({ strategy: 'local' }),
+  updatedAt: async () => {
+    return Date.now()
+  }
 })
 
 // Schema for allowed query properties
-export const userQueryProperties = Type.Pick(userSchema, ['id', 'email'])
+export const userQueryProperties = Type.Pick(userSchema, [
+  'id', 
+  'email', 
+  'role', 
+  'createdAt',
+  'updatedAt'
+])
 export const userQuerySchema = Type.Intersect(
   [
     querySyntax(userQueryProperties),
