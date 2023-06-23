@@ -1,3 +1,4 @@
+import { subProjects } from './sub-projects/sub-projects'
 import { projects } from './projects/projects'
 import { profile } from './profile/profile'
 import { user } from './users/users'
@@ -5,6 +6,7 @@ import { user } from './users/users'
 import type { Application } from '../declarations'
 
 export const services = (app: Application) => {
+  app.configure(subProjects)
   app.configure(projects)
   app.configure(profile)
   app.configure(user)
