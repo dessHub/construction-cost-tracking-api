@@ -12,8 +12,7 @@ export async function up(knex: Knex): Promise<void> {
     table.datetime('start_date').nullable()
     table.datetime('end_date').nullable()
     table.bigint('userId').references('id').inTable('users').notNullable()
-    table.bigint('createdAt')
-    table.bigint('updatedAt')
+    table.timestamps(true, true, true)
   })
 }
 

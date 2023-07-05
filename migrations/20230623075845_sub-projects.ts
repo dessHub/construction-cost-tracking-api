@@ -9,8 +9,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('description')
     table.bigint('projectId').references('id').inTable('projects').notNullable()
     table.string('status').defaultTo('Pending')
-    table.bigint('createdAt')
-    table.bigint('updatedAt')
+    table.timestamps(true, true, true)
   })
 }
 

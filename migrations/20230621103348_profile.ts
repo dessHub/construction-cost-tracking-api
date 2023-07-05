@@ -10,8 +10,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('occupation')
     table.string('avatar')
     table.bigint('userId').references('id').inTable('users').notNullable().unique()
-    table.bigint('createdAt')
-    table.bigint('updatedAt')
+    table.timestamps(true, true, true);
   })
 }
 
