@@ -16,6 +16,7 @@ import {
 
 import type { Application } from '../../declarations'
 import { UserService, getOptions } from './users.class'
+import { addUserNameToQueryParams, populateProfile, createProfile } from '../../hooks/profile'
 
 export const userPath = 'users'
 export const userMethods = ['find', 'get', 'create', 'patch', 'remove'] as const
@@ -47,12 +48,16 @@ export const user = (app: Application) => {
       all: [schemaHooks.validateQuery(userQueryValidator), schemaHooks.resolveQuery(userQueryResolver)],
       find: [],
       get: [],
-      create: [schemaHooks.validateData(userDataValidator), schemaHooks.resolveData(userDataResolver)],
+      create: [addUserNameToQueryParams, schemaHooks.validateData(userDataValidator), schemaHooks.resolveData(userDataResolver)],
       patch: [schemaHooks.validateData(userPatchValidator), schemaHooks.resolveData(userPatchResolver)],
       remove: []
     },
     after: {
-      all: []
+      all: [],
+      create: [createProfile],
+      find: [populateProfile],
+      get: [populateProfile],
+      patch: [populateProfile]
     },
     error: {
       all: []

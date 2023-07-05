@@ -16,8 +16,8 @@ export const subProjectsSchema = Type.Object(
     projectId: Type.Number(),
     project: Type.Ref(projectsSchema),
     status: Type.Optional(Type.String()),
-    createdAt: Type.Number(),
-    updatedAt: Type.Number(),
+    createdAt: Type.Optional(Type.String()),
+    updatedAt: Type.Optional(Type.String())
   },
   { $id: 'SubProjects', additionalProperties: false }
 )
@@ -43,14 +43,7 @@ export const subProjectsDataSchema = Type.Pick(subProjectsSchema, [
 })
 export type SubProjectsData = Static<typeof subProjectsDataSchema>
 export const subProjectsDataValidator = getValidator(subProjectsDataSchema, dataValidator)
-export const subProjectsDataResolver = resolve<SubProjects, HookContext>({
-  createdAt: async () => {
-    return Date.now()
-  },
-  updatedAt: async () => {
-    return Date.now()
-  }
-})
+export const subProjectsDataResolver = resolve<SubProjects, HookContext>({})
 
 // Schema for updating existing entries
 export const subProjectsPatchSchema = Type.Partial(subProjectsSchema, {
@@ -58,11 +51,7 @@ export const subProjectsPatchSchema = Type.Partial(subProjectsSchema, {
 })
 export type SubProjectsPatch = Static<typeof subProjectsPatchSchema>
 export const subProjectsPatchValidator = getValidator(subProjectsPatchSchema, dataValidator)
-export const subProjectsPatchResolver = resolve<SubProjects, HookContext>({
-  updatedAt: async () => {
-    return Date.now()
-  }
-})
+export const subProjectsPatchResolver = resolve<SubProjects, HookContext>({})
 
 // Schema for allowed query properties
 export const subProjectsQueryProperties = Type.Pick(subProjectsSchema, [

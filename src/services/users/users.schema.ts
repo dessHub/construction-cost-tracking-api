@@ -13,9 +13,9 @@ export const userSchema = Type.Object(
     id: Type.Number(),
     email: Type.String(),
     role: Type.Optional(Type.String()),
-    password: Type.Optional(Type.String()),
-    createdAt: Type.Number(),
-    updatedAt: Type.Number()
+    password: Type.String(),
+    createdAt: Type.Optional(Type.String()),
+    updatedAt: Type.Optional(Type.String())
   },
   { $id: 'User', additionalProperties: false }
 )
@@ -35,13 +35,7 @@ export const userDataSchema = Type.Pick(userSchema, ['email', 'password', 'role'
 export type UserData = Static<typeof userDataSchema>
 export const userDataValidator = getValidator(userDataSchema, dataValidator)
 export const userDataResolver = resolve<User, HookContext>({
-  password: passwordHash({ strategy: 'local' }),
-  createdAt: async () => {
-    return Date.now()
-  },
-  updatedAt: async () => {
-    return Date.now()
-  }
+  password: passwordHash({ strategy: 'local' })
 })
 
 // Schema for updating existing entries
@@ -51,10 +45,7 @@ export const userPatchSchema = Type.Partial(userSchema, {
 export type UserPatch = Static<typeof userPatchSchema>
 export const userPatchValidator = getValidator(userPatchSchema, dataValidator)
 export const userPatchResolver = resolve<User, HookContext>({
-  password: passwordHash({ strategy: 'local' }),
-  updatedAt: async () => {
-    return Date.now()
-  }
+  password: passwordHash({ strategy: 'local' })
 })
 
 // Schema for allowed query properties
@@ -78,7 +69,7 @@ export const userQueryValidator = getValidator(userQuerySchema, queryValidator)
 export const userQueryResolver = resolve<UserQuery, HookContext>({
   // If there is a user (e.g. with authentication), they are only allowed to see their own data
   id: async (value, user, context) => {
-    if (context.params.user) {
+    if (context.params.user && context.method !== 'find') {
       return context.params.user.id
     }
 

@@ -16,8 +16,8 @@ export const profileSchema = Type.Object(
     location: Type.Optional(Type.String()),
     occupation: Type.Optional(Type.String()),
     avatar: Type.Optional(Type.String()),
-    createdAt: Type.Number(),
-    updatedAt: Type.Number(),
+    createdAt: Type.Optional(Type.String()),
+    updatedAt: Type.Optional(Type.String()),
     userId: Type.Number(),
     user: Type.Ref(userSchema)
   },
@@ -36,6 +36,7 @@ export const profileExternalResolver = resolve<Profile, HookContext>({})
 
 // Schema for creating new entries
 export const profileDataSchema = Type.Pick(profileSchema, [
+  'userId',
   'name', 
   'location', 
   'occupation', 
@@ -60,12 +61,6 @@ export const profileDataResolver = resolve<Profile, HookContext>({
   userId: async (_value, _profile, context) => {
     // Associate the record with the id of the authenticated user
     return context.params.user.id
-  },
-  createdAt: async () => {
-    return Date.now()
-  },
-  updatedAt: async () => {
-    return Date.now()
   }
 })
 
@@ -75,17 +70,13 @@ export const profilePatchSchema = Type.Partial(profileSchema, {
 })
 export type ProfilePatch = Static<typeof profilePatchSchema>
 export const profilePatchValidator = getValidator(profilePatchSchema, dataValidator)
-export const profilePatchResolver = resolve<Profile, HookContext>({
-  updatedAt: async () => {
-    return Date.now()
-  }
-})
+export const profilePatchResolver = resolve<Profile, HookContext>({})
 
 // Schema for allowed query properties
 export const profileQueryProperties = Type.Pick(profileSchema, [
   'id', 
   'name', 
-  'location', 
+  'location',
   'occupation',
   'createdAt',
   'updatedAt',

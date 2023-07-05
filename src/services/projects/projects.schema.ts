@@ -19,8 +19,8 @@ export const projectsSchema = Type.Object(
     owner: Type.Ref(userSchema),
     start_date: Type.String({ format: 'date-time' }),
     end_date: Type.Optional(Type.String({ format: 'date-time' })),
-    createdAt: Type.Number(),
-    updatedAt: Type.Number(),
+    createdAt: Type.Optional(Type.String()),
+    updatedAt: Type.Optional(Type.String())
   },
   { $id: 'Projects', additionalProperties: false }
 )
@@ -52,12 +52,6 @@ export const projectsDataResolver = resolve<Projects, HookContext>({
   userId: async (_value, _project, context) => {
     // Associate the record with the id of the authenticated user
     return context.params.user.id
-  },
-  createdAt: async () => {
-    return Date.now()
-  },
-  updatedAt: async () => {
-    return Date.now()
   }
 })
 
@@ -67,11 +61,7 @@ export const projectsPatchSchema = Type.Partial(projectsSchema, {
 })
 export type ProjectsPatch = Static<typeof projectsPatchSchema>
 export const projectsPatchValidator = getValidator(projectsPatchSchema, dataValidator)
-export const projectsPatchResolver = resolve<Projects, HookContext>({
-  updatedAt: async () => {
-    return Date.now()
-  }
-})
+export const projectsPatchResolver = resolve<Projects, HookContext>({})
 
 // Schema for allowed query properties
 export const projectsQueryProperties = Type.Pick(projectsSchema, [
